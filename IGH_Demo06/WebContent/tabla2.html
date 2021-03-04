@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tabla de Multiplicar</title>
+</head>
+<body>
+	<h1>TABLA DE MULTIPLICAR</h1>
+
+	<h2>DATOS</h2>
+
+	<form id="formTabla">
+		<label>Número: </label> <input type="text" name="num" id="num">
+		<input type="button" value="Procesar" id="btnProcesar" />
+	</form>
+
+	<div id="divResultado" style="display: none;">
+		<h2>RESULTADO</h2>
+		<div>
+			<table>
+					<tbody  id="divTablaBody">
+					</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="jquery/jquery-3.5.1.min.js"></script>
+	<script type="text/javascript">
+		$("#btnProcesar").click(function() {
+
+			let data = $("#formTabla").serialize();
+			$.post("TablaMultiplicar2", data, function(arreglo) {
+				let data = "";
+				for(let i = 0; i < arreglo.length; i++){
+					let rec = arreglo[i];
+					data += "<tr>";
+					data += "<td>" + rec.num1 + "</td>";
+					data += "<td> X </td>";
+					data += "<td>" + rec.num2 + "</td>";
+					data += "<td> = </td>";
+					data += "<td>" + rec.rpta + "</td>";
+					data += "</tr>";
+				}
+				$("#divTablaBody").html(data);
+				$("#divResultado").show();
+			});
+			
+
+		});
+	</script>
+</body>
+</html>

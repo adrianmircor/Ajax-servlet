@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Consultas</title>
+</head>
+<body>
+	<h1>TABLA DE CONSULTAS</h1>
+
+	<h2>DATOS</h2>
+
+	<form id="formTabla">
+		<label>Número de Cuenta: </label> 
+		
+		<input type="text" name="cuenta"
+			id="num"> 
+		<input type="button" value="Consultar"
+			id="btnProcesar" />
+	</form>
+
+	<div id="divResultado" style="display: none;">
+		<h2>RESULTADO</h2>
+		<div>
+			<table id="tabla">
+				<thead>
+					<tr>
+						<th>Tipo</th>
+						<th>Fecha</th>
+						<th>Importe</th>
+						<th>Cuenta</th>
+						<th>Nro de Movimiento</th>
+					</tr>
+				</thead>
+				<tbody id="divTablaBody">
+
+				</tbody>
+			</table>
+		</div>
+		<select name="select">
+			<option value="" selected disabled>Exportar a Excel</option>
+			<option value="xlsx" >Extensión .xlsx</option>
+			<option value="xls">Extensión .xls</option>
+		</select>
+		
+			<button type="button" id="exportarExcel">Exportar a Excel</button>
+		
+		
+	</div>
+
+	<script type="text/javascript" src="jquery/jquery-3.5.1.min.js"></script>
+	<script type="text/javascript">
+		$("#btnProcesar").click(function() {
+
+			//serialize(): captura los valores del input, luego de clickear
+			let data = $("#formTabla").serialize();
+			//console.log("data: ",data) → data: cuenta = xxxxxxxx
+
+			//jQuery.post( url [, data ] [, success ] [, dataType ] )
+			/*data: Un objeto simple o una cadena que se envía al servidor con la solicitud
+			 **success: Una función de devolución de llamada que se ejecuta si la solicitud tiene éxito
+			 */
+
+			$.post("CuentaController", data, function(arreglo) {
+				console.log("--->", arreglo); //arreglo: es el JSON que envió el servidor
+				let data = "";
+				for (let i = 0; i < arreglo.length; i++) {
+					let rec = arreglo[i];
+					data += "<tr>";
+					data += "<td>" + rec.TIPO + "</td>";
+					data += "<td>" + rec.FECHA + "</td>";
+					data += "<td>" + rec.IMPORTE + "</td>";
+					data += "<td>" + rec.CUENTA + "</td>";
+					data += "<td>" + rec.NROMOV + "</td>";
+					data += "</tr>";
+				}
+				$("#divTablaBody").html(data);
+				$("#divResultado").show();
+			});
+
+			//*debería ser GET en vez de POST
+		});
+
+		$("#exportarExcel").click(function() {
+			$("#tabla").table2excel({
+				exclude : ".excludeThisClass",
+				name : "Archiv eName",
+				filename : "SomeFile.xlsx", // do include extension
+				preserveColors : false
+			// set to true if you want background colors and font colors preserved
+			});
+		});
+		
+		$('select').on('change', function (e) {
+		    //var optionSelected = $("option:selected", this);
+		    let valueSelected = this.value;
+		    if(valueSelected === 'xlsx'){
+		    	$("#tabla").table2excel({
+					exclude : ".excludeThisClass",
+					name : "Nombre de Archivo",
+					filename : "ArchiveXLSX", // do include extension
+					fileext: ".xlsx",
+					preserveColors : false
+				// set to true if you want background colors and font colors preserved
+				});
+		    }else if(valueSelected === 'xls'){
+		    	$("#tabla").table2excel({
+					exclude : ".excludeThisClass",
+					name : "Nombre de Archivo",
+					filename : "Archivo.xls", // do include extension
+					preserveColors : false
+				// set to true if you want background colors and font colors preserved
+				});
+		    }
+		    console.log(valueSelected);
+		});
+	</script>
+	<script
+		src="//cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
+</body>
+</html>
